@@ -45,23 +45,34 @@ void displayPose(MsgT::Response out){
     }
     rotorcaps_idx.clear();
 
-//    ROS_INFO_STREAM("scene loading..." );
+    ROS_INFO_STREAM("scene loading..." );
     pcl::PointCloud<PointT>::Ptr scene(new pcl::PointCloud<PointT>());
-    pcl::io::loadPCDFile<PointT> ("/home/acat2/catkin_ws/src/aau_workcell/data/stereo_PC_binary.pcd", *scene);
+
+     
+    //    pcl::io::loadPCDFile<PointT> ("/home/acat2/catkin_ws/src/aau_workcell/data/stereo_PC_binary.pcd", *scene);
+   // pcl::io::loadPCDFile<PointT> ("/home/acat2/catkin_ws/src/aau_workcell/data/carmine_PC_binary.pcd", *scene);
 
     //pcl::fromROSMsg(out.scene, *scene);
     int v1(0);
 
-    pcl::visualization::PointCloudColorHandlerRGBField<PointT> rgb(scene);
-    viewer->updatePointCloud<PointT> (scene, rgb, "Scene");
-//    ROS_INFO_STREAM("scene done..." );
-
+   
 
     pcl::PointCloud<PointT>::Ptr object (new pcl::PointCloud<PointT>());
 
     pcl::fromROSMsg(out.object, *object);
+    std::cout << "OBJECT SIZE: " << object->size() << std::endl;
 
-    //ROS_INFO_STREAM("out.pose_value.size(): " << out.pose_value.size());
+    if (object->size() == 1029) //it is axle_cad
+	pcl::io::loadPCDFile<PointT> ("/home/acat2/catkin_ws/src/aau_workcell/data/stereo_PC_binary.pcd", *scene);
+    else  pcl::io::loadPCDFile<PointT> ("/home/acat2/catkin_ws/src/aau_workcell/data/carmine_PC_binary.pcd", *scene);
+
+
+    pcl::visualization::PointCloudColorHandlerRGBField<PointT> rgb(scene);
+    viewer->updatePointCloud<PointT> (scene, rgb, "Scene");
+    ROS_INFO_STREAM("scene done..." );
+
+
+    ROS_INFO_STREAM("out.pose_value.size(): " << out.pose_value.size());
     for (int i = 0; i <  out.pose_value.size(); i++){
         std::stringstream name, object_name;
         name << i << ", pose goodness: " << out.pose_value[i];
@@ -78,7 +89,8 @@ void displayPose(MsgT::Response out){
         m_init(14) = m_init(14)/1000;
 
         m = m_init;
-        std::cout << "vizualizer pose: " << m << std::endl;
+	//pcl::console::print_warn("vizualizer pose: \n");
+        //std::cout << m << std::endl;
         object_name << i;
         pcl::transformPointCloud(*object, *final, m);
         cv::Point3f color = getColor(i);
