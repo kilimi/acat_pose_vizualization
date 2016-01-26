@@ -73,13 +73,15 @@ void displayPose(MsgT::Response out){
 
 
     ROS_INFO_STREAM("out.pose_value.size(): " << out.pose_value.size());
-    for (int i = 0; i <  out.pose_value.size(); i++){
+    //int startPoseIdx = out.poses.size()/2;
+
+    for (int i = 0; i < out.pose_value.size(); i++){
         std::stringstream name, object_name;
-        name << i << ", pose goodness: " << out.pose_value[i];
+        name << i  << ", pose goodness: " << out.pose_value[i];
         pcl::PointCloud<PointT>::Ptr final(new pcl::PointCloud<PointT>());
 
         tf::Transform transform;
-        tf::transformMsgToTF(out.poses[i], transform);
+        tf::transformMsgToTF(out.vizualizerPoses[i], transform);
 
         Eigen::Matrix4f m_init, m;
         transformAsMatrix(transform, m_init);
@@ -89,15 +91,14 @@ void displayPose(MsgT::Response out){
         m_init(14) = m_init(14)/1000;
 
         m = m_init;
-	//pcl::console::print_warn("vizualizer pose: \n");
-        //std::cout << m << std::endl;
+        
         object_name << i;
         pcl::transformPointCloud(*object, *final, m);
         cv::Point3f color = getColor(i);
 
         viewer->addPointCloud<PointT> (final, object_name.str());
         viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, color.x, color.y, color.z, object_name.str());
-        viewer->addText(name.str(), 0, 0 + i*30, color.x, color.y, color.z, object_name.str());
+        viewer->addText(name.str(), 0, 0 + (i)*30, color.x, color.y, color.z, object_name.str());
         rotorcaps_idx.push_back(i);
     }
 
@@ -110,55 +111,55 @@ cv::Point3f getColor(int number){
         return cv::Point3f(0,1,0.63);
         break;
     case 1:
-        return cv::Point3f(0, 0.697, 0.439);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 2:
         return cv::Point3f(0,0.4,0.251);
         break;
     case 3:
-        return cv::Point3f(0,0.2,0.125);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 4:
-        return cv::Point3f(1,0,1);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 5:
-        return cv::Point3f(0.3,1,0.5);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 6:
-        return cv::Point3f(0.5,0,0);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 7:
-        return cv::Point3f(0,1,1);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 8:
-        return cv::Point3f(1,0.5,0.5);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 9:
-        return cv::Point3f(0,0.5,0);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 10:
-        return cv::Point3f(0,1,0.5);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 11:
-        return cv::Point3f(0.3,0.7,0.1);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 12:
-        return cv::Point3f(0.8,1.0,0.0);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 13:
-        return cv::Point3f(0.01,0.54,0.5);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 14:
-        return cv::Point3f(0.00,0.04,0.5);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 15:
-        return cv::Point3f(0.01,0.01,0.0);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 16:
-        return cv::Point3f(0.08,0.01,0.0);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 17:
-        return cv::Point3f(0.08,0.1,0.3);
+        return cv::Point3f(0,0.4,0.251);
         break;
     case 18:
         return cv::Point3f(0.1,0.2,0.3);
