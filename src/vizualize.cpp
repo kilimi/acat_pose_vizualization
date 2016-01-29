@@ -24,6 +24,8 @@ typedef pose_estimation::PoseEstimation MsgT;
 typedef pcl::PointXYZRGBA PointT;
 cv::Point3f getColor(int number);
 
+std::ofstream myfile;
+
 boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("Pose estimation result"));
 
 bool once = false;
@@ -94,6 +96,10 @@ void displayPose(MsgT::Response out){
         
         object_name << i;
         pcl::transformPointCloud(*object, *final, m);
+	myfile << "Object: " << object->size() << std::endl;
+        myfile << m << std::endl;
+	myfile << "\n";
+	myfile.flush();
         cv::Point3f color = getColor(i);
 
         viewer->addPointCloud<PointT> (final, object_name.str());
@@ -101,7 +107,7 @@ void displayPose(MsgT::Response out){
         viewer->addText(name.str(), 0, 0 + (i)*30, color.x, color.y, color.z, object_name.str());
         rotorcaps_idx.push_back(i);
     }
-
+   viewer->saveScreenshot ("/home/acat2/catkin_ws/src/aau_workcell/data/screenshot.png");
 }
 
 
@@ -192,6 +198,7 @@ int main(int argc, char **argv){
     try{
 
         if (!once){
+	    myfile.open("/home/acat2/catkin_ws/src/aau_workcell/data/RECORDED_POSES.txt");
             pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
 
             pcl::io::loadPCDFile<PointT> ("/home/acat2/catkin_ws/src/aau_workcell/data/stereo_PC_binary.pcd", *cloud);
